@@ -1,10 +1,13 @@
 # renard
 
-A Clojure library designed to ... well, that part is up to you.
+A Clojure project to mess around with instaparse
 
 ## Usage
 
-FIXME
+`lein deps && lein run`
+Type stuff
+????
+Errors
 
 ## License
 
