@@ -5,18 +5,21 @@
 (def parser
   (insta/parser
    "expr = (string | reload-fun | keyword | number | vector | operation)
-    operation = <'('> operator space+ vector <')'>
+    operation = <'('> operator space+ vector operation? <')'>
 
-    vector = snumber+ number
+    vector = <'['>? items+ <']'>?
+    <list> = <'('> items+ <')'>
+
+    <items> = snumber+ | number+ | string+ | keyword
 
     string = string-literal sword+ string-literal
-    <snumber> = (number space)*
-    <skeyword> = (keyword space)*
+    <snumber> = number space?
+    <skeyword> = keyword space?
 
     <string-literal> = <#'[\\\"]+'>
     operator = '+' | '-' | '*' | '/'
-    <sword> = #'[a-zA-Z\\.\\ ]*'
-    keyword = #'[a-zA-Z]*'
+    <sword> = #'[a-zA-Z\\.\\ ]+'
+    keyword = #'[a-zA-Z]+'
     number = #'[0-9]+'
     <space> = <#'[ ]+'>
 
@@ -37,14 +40,20 @@
 (def transform-options
   {:reload-fun reload-renard
    :string str
+   :keyword str
    :number read-string
    :vector (comp vec list)
    :operator choose-operator
-   :operation apply
+   :operation (fn [& args] (str args))
    :expr identity})
 
 (defn parse [input]
   (->> (parser input) (insta/transform transform-options)))
 
+(parse "(lll)")
 
-(parse "(+ 1 2 3 4)")
+(parse "(+ 1 2 3 (- 2 3))")
+
+(parse "\"word word\"")
+
+(parse "[12 2 3 4 \"lol\"]")
