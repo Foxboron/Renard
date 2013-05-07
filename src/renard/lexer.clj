@@ -4,26 +4,31 @@
 
 (def parser
   (insta/parser
-   "expr = (string | reload-fun | keyword | number | vector | operation)
-    operation = <'('> operator space+ vector operation? <')'>
+   "
+   <code> = space* exprs space*
+   <exprs> = (expr space+)* expr
+   <expr> =  defn / def / lambda / list / vector / string / bool / symbol / number
 
-    vector = <'['>? items+ <']'>?
-    <list> = <'('> items+ <')'>
+   lambda = <'('> <lambda_kw> space+ expr space* <')'>
+   defn = <'('> <defn_kw> space+ symbol space* vector space* exprs* space* <')'>
+   def = <'('> <def_kw> space+ symbol space* exprs* <')'>
 
-    <items> = snumber+ | number+ | string+ | keyword
+   vector = <'['> space* exprs* space* '& args'? space* <']'>
+   list = <'('> space* !((defn_kw | lambda_kw) (space+ | <')'>)) exprs* space* <')'>
 
-    string = string-literal sword+ string-literal
-    <snumber> = number space?
-    <skeyword> = keyword space?
+   def_kw = 'def'
+   lambda_kw = 'lambda'
+   defn_kw = 'defn'
 
-    <string-literal> = <#'[\\\"]+'>
-    operator = '+' | '-' | '*' | '/'
-    <sword> = #'[a-zA-Z\\.\\ ]+'
-    keyword = #'[a-zA-Z]+'
-    number = #'[0-9]+'
-    <space> = <#'[ ]+'>
-
-    reload-fun = #'reload'"))
+   bool = 'true' | 'false'
+   number = (integer | float)
+   <float> = integer '.' integer
+   <integer> = number_re+
+   <number_re> = #'[\\d]*'
+   <space> = <#'[ \\t\\n,]+'>
+   symbol = #'[a-zA-Z:][^ \\(\\)\\[\\]]*'
+   string = <'\\\"'> #'[^\".]*' <'\\\"'>
+"))
 
 (defn choose-operator [op]
   (case op
@@ -38,22 +43,7 @@
    (catch Exception e (println (str "Exception: " (.getMessage e))))))
 
 (def transform-options
-  {:reload-fun reload-renard
-   :string str
-   :keyword str
-   :number read-string
-   :vector (comp vec list)
-   :operator choose-operator
-   :operation (fn [& args] (str args))
-   :expr identity})
+  {:vector vector})
 
 (defn parse [input]
   (->> (parser input) (insta/transform transform-options)))
-
-(parse "(lll)")
-
-(parse "(+ 1 2 3 (- 2 3))")
-
-(parse "\"word word\"")
-
-(parse "[12 2 3 4 \"lol\"]")
