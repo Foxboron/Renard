@@ -7,7 +7,7 @@
    "
    <code> = space* exprs space*
    <exprs> = (expr space+)* expr
-   <expr> =  defn / def / lambda / list / vector / string / bool / symbol / number
+   <expr> =  (defn / def / lambda / list / vector / string / bool / symbol / number)
 
    lambda = <'('> <lambda_kw> space+ expr space* <')'>
    defn = <'('> <defn_kw> space+ symbol space* vector space* exprs* space* <')'>
@@ -22,7 +22,7 @@
 
    bool = 'true' | 'false'
    number = (integer | float)
-   <float> = integer '.' integer
+   <float> = #'[\\d]*\\.[\\d]*'
    <integer> = number_re+
    <number_re> = #'[\\d]*'
    <space> = <#'[ \\t\\n,]+'>
@@ -43,7 +43,12 @@
    (catch Exception e (println (str "Exception: " (.getMessage e))))))
 
 (def transform-options
-  {:vector vector})
+  {:vector vector
+   :symbol str
+   :number read-string
+   :string str
+   :bool read-string
+   :list vector})
 
 (defn parse [input]
   (->> (parser input) (insta/transform transform-options)))

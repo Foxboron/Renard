@@ -18,9 +18,9 @@
               => '([:number "10"]))
        (fact "floats - FIX ME"
               (lexer/parser "1.0")
-              => '([:number "1" "." "0"])
+              => '([:number "1.0"])
               (lexer/parser "34.42")
-              => '([:number "34" "." "42"])))
+              => '([:number "34.42"])))
 
 
 
@@ -49,7 +49,7 @@
        (lexer/parser "[1,2,3]")
        => '([:vector [:number "1"] [:number "2"] [:number "3"]])
        (lexer/parser "[1 symbol :symbol true 100 4.2 [1 2 3] (\"hey\")]")
-       => '([:vector [:number "1"] [:symbol "symbol"] [:symbol ":symbol"] [:bool "true"] [:number "100"] [:number "4" "." "2"] [:vector [:number "1"] [:number "2"] [:number "3"]] [:list [:string "hey"]]])
+       => '([:vector [:number "1"] [:symbol "symbol"] [:symbol ":symbol"] [:bool "true"] [:number "100"] [:number "4.2"] [:vector [:number "1"] [:number "2"] [:number "3"]] [:list [:string "hey"]]])
        (lexer/parser "[& args]")
        => '([:vector "& args"])
        (lexer/parser "[x y z & args]")
@@ -67,6 +67,6 @@
        (lexer/parser "(def bool true)")
        => '([:def [:symbol "bool"] [:bool "true"]])
        (lexer/parser "(def number 1.0)")
-       => '([:def [:symbol "number"] [:number "1" "." "0"]])
+       => '([:def [:symbol "number"] [:number "1.0"]])
        (lexer/parser "(def word \"Test Test\")")
        => '([:def [:symbol "word"] [:string "Test Test"]]))
