@@ -57,8 +57,7 @@
 
 (facts "functions"
        (lexer/parser "(defn test [x] (println \"hello world\"))")
-       => '([:defn [:symbol "test"] [:vector [:symbol "x"]] [:list [:symbol "println"] [:string "hello world"]]]
-              ))
+       => '([:defn [:symbol "test"] [:vector [:symbol "x"]] [:list [:symbol "println"] [:string "hello world"]]]))
 
 
 (facts "define"
